@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using TurisManager.Data;
 using TurisManager.Models;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TurisManager.Pages.PacotesTuristicos
 {
@@ -20,32 +22,49 @@ namespace TurisManager.Pages.PacotesTuristicos
         }
 
         [BindProperty]
-        public PacoteTuristico PacoteTuristico { get; set; }
-        public SelectList CidadesDestinos { get; set; }
+        public PacoteTuristico Pacote { get; set; } = new PacoteTuristico();
+
+        [BindProperty]
+        public int SelectedPaisDestinoId { get; set; }
+
+        [BindProperty]
+        public int SelectedCidadeDestinoId { get; set; }
+
+        public SelectList Paises { get; set; }
+        public SelectList Cidades { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
-            CidadesDestinos = new SelectList(await _context.CidadesDestinos.ToListAsync(), "Id", "Nome");
+            Paises = new SelectList(await _context.PaisesDestinos.ToListAsync(), "Id", "Nome");
+            Cidades = new SelectList(await _context.CidadesDestinos.ToListAsync(), "Id", "Nome");
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(int[] selectedDestinos)
+        public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
-                CidadesDestinos = new SelectList(await _context.CidadesDestinos.ToListAsync(), "Id", "Nome");
+                Paises = new SelectList(await _context.PaisesDestinos.ToListAsync(), "Id", "Nome");
+                Cidades = new SelectList(await _context.CidadesDestinos.ToListAsync(), "Id", "Nome");
                 return Page();
             }
 
-            if (selectedDestinos != null)
+            var cidadeDestino = await _context.CidadesDestinos
+                .FirstOrDefaultAsync(c => c.Id == SelectedCidadeDestinoId);
+
+            PaisDestino? paisDestino = null;
+            if (cidadeDestino != null)
             {
-                PacoteTuristico.Destinos = await _context.CidadesDestinos
-                    .Where(d => selectedDestinos.Contains(d.Id))
-                    .ToListAsync();
+                paisDestino = await _context.PaisesDestinos
+                    .FirstOrDefaultAsync(p => p.Cidades.Any(c => c.Id == cidadeDestino.Id));
             }
 
-            _context.PacotesTuristicos.Add(PacoteTuristico);
-            await _context.SaveChangesAsync();
+            if (cidadeDestino != null)
+            {
+                Pacote.Destinos = new List<CidadeDestino> { cidadeDestino };
+                _context.PacotesTuristicos.Add(Pacote);
+                await _context.SaveChangesAsync();
+            }
 
             return RedirectToPage("./Index");
         }

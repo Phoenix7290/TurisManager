@@ -1,8 +1,57 @@
 ﻿@page
 @model TurisManager.Pages.Reservas.CriarReservaModel
 @{
+    ViewData["Title"] = "Criar Reserva";
 }
 
-<div class="text-danger">
-    @Html.ValidationSummary(false)
-</div>
+<h1>Criar Reserva</h1>
+
+<form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="form-group">
+        <label asp-for="Reserva.ClienteId">Cliente</label>
+        <select asp-for="Reserva.ClienteId" asp-items="Model.Clientes" class="form-control"></select>
+        <span asp-validation-for="Reserva.ClienteId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Reserva.PacoteTuristicoId">Pacote Turístico</label>
+        <select asp-for="Reserva.PacoteTuristicoId" asp-items="Model.Pacotes" class="form-control" onchange="updateDestinos()"></select>
+        <span asp-validation-for="Reserva.PacoteTuristicoId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Destinos do Pacote</label>
+        <div id="destinosDisplay"></div>
+    </div>
+    <div class="form-group">
+        <label asp-for="Diarias">Diárias</label>
+        <input asp-for="Diarias" type="number" class="form-control" min="1" />
+        <span asp-validation-for="Diarias" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ValorDiaria">Valor por Diária</label>
+        <input asp-for="ValorDiaria" type="number" step="0.01" class="form-control" min="0.01" />
+        <span asp-validation-for="ValorDiaria" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Reserva.DataReserva">Data da Reserva</label>
+        <input asp-for="Reserva.DataReserva" type="date" class="form-control" />
+        <span asp-validation-for="Reserva.DataReserva" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Criar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updateDestinos() {
+            var pacoteId = document.getElementById('Reserva_PacoteTuristicoId').value;
+            fetch(`/PacotesTuristicos/GetDestinos?pacoteId=${pacoteId}`)
+                .then(response => response.json())
+                .then(data => {
+                    var destinosDisplay = document.getElementById('destinosDisplay');
+                    destinosDisplay.innerHTML = data.map(d => `<p>${d.Nome}, ${d.Pais}</p>`).join('');
+                });
+        }
+        window.onload = updateDestinos;
+    </script>
+}

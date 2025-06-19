@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using TurisManager.Data;
 using TurisManager.Models;
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 
 namespace TurisManager.Pages.Clientes
 {
@@ -36,24 +37,37 @@ namespace TurisManager.Pages.Clientes
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string redirectTo)
         {
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            var cliente = new Cliente
+            try
             {
-                Nome = Cliente.Nome,
-                Email = Cliente.Email,
-                IsDeleted = false
-            };
+                var cliente = new Cliente
+                {
+                    Nome = Cliente.Nome,
+                    Email = Cliente.Email,
+                    IsDeleted = false
+                };
 
-            _context.Clientes.Add(cliente);
-            await _context.SaveChangesAsync();
+                _context.Clientes.Add(cliente);
+                await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+                if (!string.IsNullOrEmpty(redirectTo))
+                {
+                    return RedirectToPage(redirectTo, new { clienteId = cliente.Id });
+                }
+
+                return RedirectToPage("./Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Erro ao salvar cliente: {ex.Message}");
+                return Page();
+            }
         }
     }
 }

@@ -6,43 +6,11 @@
 
 <h1>Pacotes Turísticos</h1>
 
-<p>
-    <a asp-page="Create" class="btn btn-primary">Criar Novo Pacote</a>
-</p>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Título</th>
-            <th>Data de Início</th>
-            <th>Capacidade Máxima</th>
-            <th>Preço</th>
-            <th>Destinos</th>
-            <th>Ações</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var pacote in Model.PacotesTuristicos)
-        {
-            <tr>
-                <td>@pacote.Titulo</td>
-                <td>@pacote.DataInicio.ToString("dd/MM/yyyy")</td>
-                <td>@pacote.CapacidadeMaxima</td>
-                <td>@pacote.Preco.ToString("C")</td>
-                <td>
-                    @foreach (var destino in pacote.Destinos)
-                    {
-                        <span>@destino.Nome, @destino.Pais</span>
-
-                        <br />
-                    }
-                </td>
-                <td>
-                    <a asp-page="./Edit" asp-route-id="@pacote.Id">Editar</a> |
-                    <a asp-page="./Details" asp-route-id="@pacote.Id">Detalhes</a> |
-                    <a asp-page="./Delete" asp-route-id="@pacote.Id">Deletar</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+<div class="row">
+    @foreach (var pacote in Model.PacotesTuristicos)
+    {
+        <div class="col-md-4">
+            <partial name="_PacoteCard" model="pacote" />
+        </div>
+    }
+</div>

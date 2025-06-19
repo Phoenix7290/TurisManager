@@ -7,29 +7,40 @@
 <h1>Criar Pacote Turístico</h1>
 
 <form method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
-        <label asp-for="PacoteTuristico.Titulo">Título</label>
-        <input asp-for="PacoteTuristico.Titulo" class="form-control" />
-        <span asp-validation-for="PacoteTuristico.Titulo" class="text-danger"></span>
+        <label asp-for="Pacote.Titulo">Título</label>
+        <input asp-for="Pacote.Titulo" class="form-control" />
+        <span asp-validation-for="Pacote.Titulo" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="PacoteTuristico.DataInicio">Data de Início</label>
-        <input asp-for="PacoteTuristico.DataInicio" class="form-control" type="date" />
-        <span asp-validation-for="PacoteTuristico.DataInicio" class="text-danger"></span>
+        <label asp-for="Pacote.DataInicio">Data de Início</label>
+        <input asp-for="Pacote.DataInicio" type="date" class="form-control" />
+        <span asp-validation-for="Pacote.DataInicio" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="PacoteTuristico.CapacidadeMaxima">Capacidade Máxima</label>
-        <input asp-for="PacoteTuristico.CapacidadeMaxima" class="form-control" type="number" />
-        <span asp-validation-for="PacoteTuristico.CapacidadeMaxima" class="text-danger"></span>
+        <label asp-for="Pacote.CapacidadeMaxima">Capacidade Máxima</label>
+        <input asp-for="Pacote.CapacidadeMaxima" type="number" class="form-control" min="1" />
+        <span asp-validation-for="Pacote.CapacidadeMaxima" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="PacoteTuristico.Preco">Preço</label>
-        <input asp-for="PacoteTuristico.Preco" class="form-control" type="number" step="0.01" />
-        <span asp-validation-for="PacoteTuristico.Preco" class="text-danger"></span>
+        <label asp-for="Pacote.Preco">Preço</label>
+        <input asp-for="Pacote.Preco" type="number" step="0.01" class="form-control" min="0.01" />
+        <span asp-validation-for="Pacote.Preco" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label>Destinos</label>
-        <select asp-for="PacoteTuristico.Destinos" asp-items="Model.CidadesDestinos" multiple class="form-control"></select>
+        <label asp-for="SelectedPaisDestinoId">País Destino</label>
+        <select asp-for="SelectedPaisDestinoId" asp-items="Model.Paises" class="form-control">
+            <option value="">Selecione um país</option>
+        </select>
+        <span asp-validation-for="SelectedPaisDestinoId" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="SelectedCidadeDestinoId">Cidade Destino</label>
+        <select asp-for="SelectedCidadeDestinoId" asp-items="Model.Cidades" class="form-control">
+            <option value="">Selecione uma cidade</option>
+        </select>
+        <span asp-validation-for="SelectedCidadeDestinoId" class="text-danger"></span>
     </div>
     <button type="submit" class="btn btn-primary">Criar</button>
 </form>

@@ -5,6 +5,7 @@ using TurisManager.Data;
 using TurisManager.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace TurisManager.Pages.PacotesTuristicos
 {
@@ -25,6 +26,14 @@ namespace TurisManager.Pages.PacotesTuristicos
             PacotesTuristicos = await _context.PacotesTuristicos
                 .Include(p => p.Destinos)
                 .ToListAsync();
+        }
+        public JsonResult OnGetDestinos(int pacoteId)
+        {
+            var destinos = _context.PacotesTuristicos
+                .Where(p => p.Id == pacoteId)
+                .SelectMany(p => p.Destinos)
+                .ToList();
+            return new JsonResult(destinos);
         }
     }
 }

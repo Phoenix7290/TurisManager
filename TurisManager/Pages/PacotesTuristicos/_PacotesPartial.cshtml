@@ -1,0 +1,31 @@
+﻿@page
+@model TurisManager.Models.PacoteTuristico
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h5>@Model.Titulo</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>Data de Início:</strong> @Model.DataInicio.ToString("dd/MM/yyyy")</p>
+        <p><strong>Capacidade Máxima:</strong> @Model.CapacidadeMaxima</p>
+        <p><strong>Preço:</strong> @Model.Preco.ToString("C")</p>
+        <p><strong>Destinos:</strong>
+            @if (Model.Destinos != null && Model.Destinos.Any())
+            {
+                @foreach (var destino in Model.Destinos)
+                {
+                    <span>@destino.Nome, @destino.Pais</span><br />
+                }
+            }
+            else
+            {
+                <span>Nenhum destino selecionado</span>
+            }
+        </p>
+    </div>
+    <div class="card-footer">
+        <a asp-page="./Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-primary">Editar</a>
+        <a asp-page="./Details" asp-route-id="@Model.Id" class="btn btn-sm btn-info">Detalhes</a>
+        <a asp-page="./Delete" asp-route-id="@Model.Id" class="btn btn-sm btn-danger">Deletar</a>
+    </div>
+</div>
