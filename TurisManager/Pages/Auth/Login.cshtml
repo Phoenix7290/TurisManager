@@ -1,0 +1,24 @@
+﻿@page
+@model TurisManager.Pages.Auth.LoginModel
+@{
+}
+
+<h1>Login</h1>
+<form method="post">
+    <div class="text-danger">
+        @Html.ValidationSummary(false)
+    </div>
+    <div class="form-group">
+        <label for="username">Usuário</label>
+        <input id="username" name="username" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Entrar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

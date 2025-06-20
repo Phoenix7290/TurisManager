@@ -1,0 +1,24 @@
+﻿@page
+@model TurisManager.Pages.Clientes.IndexModel
+@{
+    ViewData["Title"] = "Lista de Clientes";
+}
+
+<h1>Lista de Clientes</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cliente in Model.Clientes)
+        {
+            <tr>
+                <td>@cliente.Nome</td>
+                <td>@cliente.Email</td>
+            </tr>
+        }
+    </tbody>
+</table>

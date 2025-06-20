@@ -1,0 +1,13 @@
+﻿@model TurisManager.Pages.PacoteTuristico.PacoteTuristicoPartialModel
+@{
+}
+
+<div class="card">
+    <div class="card-header">@Model.Titulo</div>
+    <div class="card-body">
+        <p>Data: @Model.DataInicio.ToShortDateString()</p>
+        <p>Capacidade: @Model.CapacidadeMaxima</p>
+        <p>Preço: @Model.Preco.ToString("C")</p>
+        <p>Destinos: @string.Join(", ", Model.Destinos.Select(d => d.Nome))</p>
+    </div>
+</div>

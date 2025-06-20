@@ -1,0 +1,28 @@
+﻿@page
+@model TurisManager.Pages.Notas.VerNotasModel
+@{
+    ViewData["Title"] = "Notas";
+}
+
+<h1>Notas</h1>
+<form method="post">
+    <div class="form-group">
+        <label for="anotacao">Nova Nota</label>
+        <textarea id="anotacao" name="anotacao" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+
+<h2>Arquivos</h2>
+<ul>
+    @foreach (var file in Model.Files)
+    {
+        <li><a asp-page="./VerNotas" asp-route-file="@file">@file</a></li>
+    }
+</ul>
+
+@if (!string.IsNullOrEmpty(Model.FileContent))
+{
+    <h3>Conteúdo</h3>
+    <p>@Model.FileContent</p>
+}
