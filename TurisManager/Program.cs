@@ -10,12 +10,16 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddDbContext<TurisManagerContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("TurisManagerContext")));
-
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
-        options.LoginPath = "/Login";
+        options.LoginPath = "/Auth/Login"; 
+        options.AccessDeniedPath = "/Auth/Login";
     });
+builder.Services.AddAuthorization();
+
+var connectionString = builder.Configuration.GetConnectionString("TurisManagerContext");
+Console.WriteLine(connectionString);
 
 var app = builder.Build();
 
@@ -29,8 +33,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseRouting();
+
+app.MapGet("/", async context =>
+{
+    context.Response.Redirect("/Auth/Login");
+    await context.Response.CompleteAsync();
+});
+
 app.MapRazorPages();
+
 app.Run();

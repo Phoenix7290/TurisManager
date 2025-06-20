@@ -2,11 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
-using TurisManager.Models; // Ensure this using is present for CidadeDestino
+using TurisManager.Models;
 
-namespace TurisManager.Pages.PacoteTuristico
+namespace TurisManager.Pages.PacotesTuristicos
 {
-    // S101: Renamed to PascalCase
     public class PacoteTuristicoPartialModel : PageModel
     {
         public string Titulo { get; set; }

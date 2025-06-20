@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.IO;
 
 namespace TurisManager.Pages.Notas
 {
+    [Authorize]
     public class VerNotasModel : PageModel
     {
         private readonly IWebHostEnvironment _env;
@@ -14,6 +16,9 @@ namespace TurisManager.Pages.Notas
             Files = new List<string>();
             FileContent = string.Empty;
         }
+
+        [BindProperty]
+        public string Anotacao { get; set; }
 
         public List<string> Files { get; set; }
         public string FileContent { get; set; }
@@ -30,10 +35,19 @@ namespace TurisManager.Pages.Notas
             }
         }
 
-        public IActionResult OnPost(string anotacao)
+        public IActionResult OnPost()
         {
-            var path = Path.Combine(_env.WebRootPath, "files", "nota.txt");
-            System.IO.File.WriteAllText(path, anotacao);
+            var basePath = Path.Combine(_env.WebRootPath, "files", "nota");
+            var filePath = basePath + ".txt";
+            int counter = 1;
+
+            while (System.IO.File.Exists(filePath))
+            {
+                filePath = $"{basePath}{counter}.txt";
+                counter++;
+            }
+
+            System.IO.File.WriteAllText(filePath, Anotacao);
             return RedirectToPage();
         }
     }
