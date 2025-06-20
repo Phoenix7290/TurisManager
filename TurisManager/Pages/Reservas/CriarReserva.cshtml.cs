@@ -1,12 +1,18 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
+// TurisManager/Pages/Reservas/CriarReserva.cshtml.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using TurisManager.Data;
 using TurisManager.Models;
-using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace TurisManager.Pages.Reservas
 {
+    [Authorize]
     public class CriarReservaModel : PageModel
     {
         private readonly TurisManagerContext _context;
@@ -27,15 +33,59 @@ namespace TurisManager.Pages.Reservas
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Clientes = new SelectList(await _context.Clientes.ToListAsync(), "Id", "Nome");
-            Pacotes = new SelectList(await _context.PacotesTuristicos.ToListAsync(), "Id", "Titulo");
+            Clientes = new SelectList(await _context.Clientes.Where(c => !c.IsDeleted).ToListAsync(), "Id", "Nome");
+            Pacotes = new SelectList(await _context.PacotesTuristicos
+                .Where(p => p.DataInicio > DateTime.Now)
+                .ToListAsync(), "Id", "Titulo");
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
+            {
+                Clientes = new SelectList(await _context.Clientes.Where(c => !c.IsDeleted).ToListAsync(), "Id", "Nome");
+                Pacotes = new SelectList(await _context.PacotesTuristicos
+                    .Where(p => p.DataInicio > DateTime.Now)
+                    .ToListAsync(), "Id", "Titulo");
                 return Page();
+            }
+
+            var existingReserva = await _context.Reservas
+                .AnyAsync(r => r.ClienteId == Reserva.ClienteId &&
+                               r.PacoteTuristicoId == Reserva.PacoteTuristicoId &&
+                               r.DataReserva.Date == Reserva.DataReserva.Date);
+            if (existingReserva)
+            {
+                ModelState.AddModelError(string.Empty, "O cliente já possui uma reserva para este pacote na mesma data.");
+                Clientes = new SelectList(await _context.Clientes.Where(c => !c.IsDeleted).ToListAsync(), "Id", "Nome");
+                Pacotes = new SelectList(await _context.PacotesTuristicos
+                    .Where(p => p.DataInicio > DateTime.Now)
+                    .ToListAsync(), "Id", "Titulo");
+                return Page();
+            }
+
+            var pacote = await _context.PacotesTuristicos
+                .Include(p => p.Reservas)
+                .FirstOrDefaultAsync(p => p.Id == Reserva.PacoteTuristicoId);
+            if (pacote.Reservas.Count >= pacote.CapacidadeMaxima)
+            {
+                ModelState.AddModelError(string.Empty, "O pacote atingiu a capacidade máxima.");
+                Clientes = new SelectList(await _context.Clientes.Where(c => !c.IsDeleted).ToListAsync(), "Id", "Nome");
+                Pacotes = new SelectList(await _context.PacotesTuristicos
+                    .Where(p => p.DataInicio > DateTime.Now)
+                    .ToListAsync(), "Id", "Titulo");
+                return Page();
+            }
+
+            if (pacote.Reservas.Count + 1 >= pacote.CapacidadeMaxima)
+            {
+                pacote.CapacityReached += (sender, e) =>
+                {
+                    Console.WriteLine($"Capacidade máxima atingida para o pacote {pacote.Titulo}");
+                };
+                pacote.CheckCapacity(pacote.Reservas.Count + 1);
+            }
 
             Reserva.ValorTotal = Reserva.CalcularValorTotal(Diarias, ValorDiaria);
 

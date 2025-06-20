@@ -1,42 +1,25 @@
 ﻿@page
-@model TurisManager.Pages.Reservas.CriarReservaModel
+@model TurisManager.Pages.Clientes.CriarClienteModel
 @{
-    ViewData["Title"] = "Criar Reserva";
+    ViewData["Title"] = "Criar Cliente";
 }
 
-<h1>Criar Reserva</h1>
+<h1>Criar Cliente</h1>
+
 <form method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="form-group">
-        <label asp-for="Reserva.ClienteId">Cliente</label>
-        <select asp-for="Reserva.ClienteId" class="form-control" asp-items="ViewBag.Clientes"></select>
-        <span asp-validation-for="Reserva.ClienteId" class="text-danger"></span>
+        <label asp-for="Cliente.Nome">Nome</label>
+        <input asp-for="Cliente.Nome" class="form-control" />
+        <span asp-validation-for="Cliente.Nome" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="Reserva.PacoteTuristicoId">Pacote Turístico</label>
-        <select asp-for="Reserva.PacoteTuristicoId" class="form-control" asp-items="ViewBag.Pacotes"></select>
-        <span asp-validation-for="Reserva.PacoteTuristicoId" class="text-danger"></span>
+        <label asp-for="Cliente.Email">Email</label>
+        <input asp-for="Cliente.Email" class="form-control" />
+        <span asp-validation-for="Cliente.Email" class="text-danger"></span>
     </div>
-    <div class="form-group">
-        <label asp-for="Reserva.DataReserva">Data da Reserva</label>
-        <input asp-for="Reserva.DataReserva" class="form-control" />
-        <span asp-validation-for="Reserva.DataReserva" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Diarias">Número de Diárias</label>
-        <input asp-for="Diarias" class="form-control" />
-        <span asp-validation-for="Diarias" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="ValorDiaria">Valor da Diária</label>
-        <input asp-for="ValorDiaria" class="form-control" />
-        <span asp-validation-for="ValorDiaria" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Salvar</button>
+    <button type="submit" class="btn btn-primary">Criar</button>
 </form>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <partial name="_ValidationScriptsPartial" />
 }

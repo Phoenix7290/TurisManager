@@ -1,11 +1,14 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using TurisManager.Data;
 using TurisManager.Models;
-using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace TurisManager.Pages.PacotesTuristicos
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly TurisManagerContext _context;
@@ -15,20 +18,13 @@ namespace TurisManager.Pages.PacotesTuristicos
             _context = context;
         }
 
-        public PacoteTuristico PacoteTuristico { get; set; }
+        public IList<PacoteTuristico> PacotesTuristicos { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(int id)
+        public async Task OnGetAsync()
         {
-            PacoteTuristico = await _context.PacotesTuristicos
+            PacotesTuristicos = await _context.PacotesTuristicos
                 .Include(p => p.Destinos)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (PacoteTuristico == null)
-            {
-                return NotFound();
-            }
-
-            return Page();
+                .ToListAsync();
         }
     }
 }

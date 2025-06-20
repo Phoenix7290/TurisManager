@@ -1,30 +1,50 @@
 using Microsoft.AspNetCore.Authentication;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace TurisManager.Pages.Auth
 {
     public class LoginModel : PageModel
     {
-        public async Task<IActionResult> OnPostAsync(string username, string password)
+        [BindProperty]
+        public string Username { get; set; }
+        [BindProperty]
+        public string Password { get; set; }
+
+        public string ErrorMessage { get; set; }
+
+        public IActionResult OnGet()
         {
-            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        {
+            returnUrl ??= Url.Content("~/Index");
+
+            // Hardcoded credentials for simplicity
+            if (Username == "admin" && Password == "password123")
             {
-                ModelState.AddModelError("", "Usuário e senha são obrigatórios.");
-                return Page();
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, Username),
+                    new Claim(ClaimTypes.Role, "Admin")
+                };
+
+                var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
+                var authProperties = new AuthenticationProperties
+                {
+                    IsPersistent = true
+                };
+
+                await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity), authProperties);
+                return LocalRedirect(returnUrl);
             }
 
-            if (username == "admin" && password == "1234")
-            {
-                var claims = new List<Claim> { new Claim(ClaimTypes.Name, username) };
-                var identity = new ClaimsIdentity(claims, "CookieAuth");
-                var principal = new ClaimsPrincipal(identity);
-                await HttpContext.SignInAsync("CookieAuth", principal);
-                return RedirectToPage("/Index");
-            }
-
-            ModelState.AddModelError("", "Usuário ou senha inválidos.");
+            ErrorMessage = "Invalid username or password";
             return Page();
         }
     }
