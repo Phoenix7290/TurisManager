@@ -1,0 +1,176 @@
+﻿@page "/PacotesTuristicos/Details/{id:int}"
+@model TurisManager.Pages.PacotesTuristicos.DetailsModel
+@{
+    ViewData["Title"] = "Detalhes do Pacote Turístico";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3><i class="fas fa-suitcase-rolling"></i> @Model.Pacote.Titulo</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="text-muted">Informações Gerais</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>ID do Pacote:</strong></td>
+                                    <td>@Model.Pacote.Id</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Data de Início:</strong></td>
+                                    <td>@Model.Pacote.DataInicio.ToString("dd/MM/yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Capacidade Máxima:</strong></td>
+                                    <td>@Model.Pacote.CapacidadeMaxima pessoas</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Preço:</strong></td>
+                                    <td class="text-success"><strong>@Model.Pacote.Preco.ToString("C")</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="text-muted">Status do Pacote</h5>
+                            <table class="table table-borderless">
+                                <tr>
+                                    <td><strong>Reservas Feitas:</strong></td>
+                                    <td>
+                                        @if (Model.Pacote.Reservas != null)
+                                        {
+                                            <span class="badge badge-info">@Model.Pacote.Reservas.Count</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-secondary">0</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Vagas Disponíveis:</strong></td>
+                                    <td>
+                                        @{
+                                            var vagasDisponiveis = Model.Pacote.CapacidadeMaxima - (Model.Pacote.Reservas?.Count ?? 0);
+                                        }
+                                        @if (vagasDisponiveis > 0)
+                                        {
+                                            <span class="badge badge-success">@vagasDisponiveis</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-danger">Esgotado</span>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Status:</strong></td>
+                                    <td>
+                                        @if (Model.Pacote.DataInicio < DateTime.Now)
+                                        {
+                                            <span class="badge badge-secondary">Finalizado</span>
+                                        }
+                                        else if (vagasDisponiveis <= 0)
+                                        {
+                                            <span class="badge badge-warning">Lotado</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge badge-success">Disponível</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="fas fa-map-marker-alt"></i> Destinos</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Pacote.Destinos != null && Model.Pacote.Destinos.Any())
+                    {
+                        @foreach (var destino in Model.Pacote.Destinos)
+                        {
+                            <div class="mb-3 p-2 border rounded">
+                                <h6 class="mb-1"><i class="fas fa-city"></i> @destino.Nome</h6>
+                                <small class="text-muted"><i class="fas fa-flag"></i> @destino.PaisDestino?.Nome</small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Nenhum destino cadastrado</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Pacote.Reservas != null && Model.Pacote.Reservas.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5><i class="fas fa-users"></i> Reservas (@Model.Pacote.Reservas.Count)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Cliente</th>
+                                        <th>Email</th>
+                                        <th>Data da Reserva</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var reserva in Model.Pacote.Reservas)
+                                    {
+                                        <tr>
+                                            <td>@reserva.Cliente?.Nome</td>
+                                            <td>@reserva.Cliente?.Email</td>
+                                            <td>@reserva.DataReserva.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td>
+                                                @if (reserva.IsConfirmada)
+                                                {
+                                                    <span class="badge badge-success">Confirmada</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-warning">Pendente</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="btn-group" role="group">
+                <a asp-page="./Delete" asp-route-id="@Model.Pacote.Id" class="btn btn-danger">
+                    <i class="fas fa-trash"></i> Excluir
+                </a>
+                <a asp-page="./Index" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Voltar à Lista
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

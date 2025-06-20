@@ -39,5 +39,6 @@ namespace TurisManager.Models
                 CapacityReached?.Invoke(this, EventArgs.Empty);
             }
         }
+        public bool IsConfirmada { get; set; }
     }
 }

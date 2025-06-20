@@ -1,40 +1,26 @@
 using System.Collections.Generic;
-using System.Globalization;
-using TurisManager.Models;
-using TurisManager.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using TurisManager.Data;
+using TurisManager.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.Configure<RequestLocalizationOptions>(options =>
-{
-    var supportedCultures = new[] { "pt-BR" };
-    options.SetDefaultCulture(supportedCultures[0])
-        .AddSupportedCultures(supportedCultures)
-        .AddSupportedUICultures(supportedCultures);
-});
-
-builder.Services.AddRazorPages();
-builder.Services.AddDbContext<TurisManagerContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("TurisManagerContext")));
 
 builder.Services.AddAuthentication("CookieAuth")
     .AddCookie("CookieAuth", options =>
     {
         options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
         options.AccessDeniedPath = "/Auth/Login";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
     });
 
 builder.Services.AddAuthorization();
-
-var connectionString = builder.Configuration.GetConnectionString("TurisManagerContext");
-Console.WriteLine(connectionString);
+builder.Services.AddRazorPages();
+builder.Services.AddDbContext<TurisManagerContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("TurisManagerContext")));
 
 var app = builder.Build();
-
-var localizationOptions = app.Services.GetService<IOptions<RequestLocalizationOptions>>()!.Value;
-app.UseRequestLocalization(localizationOptions);
 
 if (!app.Environment.IsDevelopment())
 {
@@ -48,17 +34,30 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", async context =>
+// MIDDLEWARE MOVIDO PARA ANTES DO MapRazorPages()
+app.Use(async (context, next) =>
 {
-    context.Response.Redirect("/Auth/Login");
-    await context.Response.CompleteAsync();
+    if (context.Request.Path == "/" && !context.User.Identity.IsAuthenticated)
+    {
+        context.Response.Redirect("/Auth/Login");
+        return;
+    }
+    await next();
 });
 
 app.MapRazorPages();
 
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/Auth/Login");
+    return Task.CompletedTask;
+});
+
+// Seed data
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<TurisManagerContext>();
+
     if (!context.Clientes.Any())
     {
         var clientes = new List<Cliente>

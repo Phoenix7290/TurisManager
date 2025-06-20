@@ -12,7 +12,7 @@
     <div class="form-group">
         <label asp-for="Reserva.ClienteId">Cliente</label>
         <select asp-for="Reserva.ClienteId" asp-items="Model.Clientes" class="form-control">
-            <option value="">-- Selecione um Cliente --</option>
+            <option value="0">-- Selecione um Cliente --</option>
         </select>
         <span asp-validation-for="Reserva.ClienteId" class="text-danger"></span>
     </div>
@@ -20,7 +20,7 @@
     <div class="form-group">
         <label asp-for="Reserva.PacoteTuristicoId">Pacote Turístico</label>
         <select asp-for="Reserva.PacoteTuristicoId" asp-items="Model.Pacotes" class="form-control" onchange="updateDestinos()">
-            <option value="">-- Selecione um Pacote --</option>
+            <option value="0">-- Selecione um Pacote --</option>
         </select>
         <span asp-validation-for="Reserva.PacoteTuristicoId" class="text-danger"></span>
     </div>
@@ -100,119 +100,78 @@
     </div>
 }
 
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        function updateDestinos() {
-            var pacoteSelect = document.getElementById('Reserva_PacoteTuristicoId');
-            var pacoteId = pacoteSelect.value;
-            var destinosDisplay = document.getElementById('destinosDisplay');
+<script>
+    function updateDestinos() {
+        var pacoteSelect = document.getElementById('Reserva_PacoteTuristicoId');
+        var pacoteId = pacoteSelect.value;
+        var destinosDisplay = document.getElementById('destinosDisplay');
 
-            if (!pacoteId || pacoteId === '') {
-                destinosDisplay.innerHTML = '<em>Selecione um pacote para ver os destinos</em>';
-                return;
-            }
-
-            destinosDisplay.innerHTML = '<em>Carregando destinos...</em>';
-
-            fetch(`/Reservas/CriarReserva?handler=Destinos&pacoteId=${pacoteId}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Erro ao carregar destinos');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log('Destinos recebidos:', data);
-                    if (data && data.length > 0) {
-                        destinosDisplay.innerHTML = data.map(d => {
-                            var pais = d.pais || 'País não informado';
-                            var nome = d.nome || 'Nome não informado';
-                            return `<span class="badge badge-info mr-1">${nome}, ${pais}</span>`;
-                        }).join('');
-                    } else {
-                        destinosDisplay.innerHTML = '<em>Nenhum destino encontrado</em>';
-                    }
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                    destinosDisplay.innerHTML = '<em class="text-danger">Erro ao carregar destinos</em>';
-                });
+        if (!pacoteId || pacoteId === '' || pacoteId === '0') {
+            destinosDisplay.innerHTML = '<em>Selecione um pacote para ver os destinos</em>';
+            return;
         }
 
-        function calculateTotal() {
-            var diariasInput = document.getElementById('Diarias');
-            var valorDiariaInput = document.getElementById('ValorDiaria');
-            var valorTotalDisplay = document.getElementById('valorTotalDisplay');
+        destinosDisplay.innerHTML = '<em>Carregando destinos...</em>';
 
-            var diarias = parseFloat(diariasInput.value) || 0;
-            var valorDiaria = parseFloat(valorDiariaInput.value) || 0;
+        fetch(`/Reservas/CriarReserva?handler=Destinos&pacoteId=${pacoteId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro ao carregar destinos');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Destinos recebidos:', data);
+                if (data && data.length > 0) {
+                    destinosDisplay.innerHTML = data.map(d => {
+                        var pais = d.pais || 'País não informado';
+                        var nome = d.nome || 'Nome não informado';
+                        return `<span class="badge badge-info mr-1">${nome}, ${pais}</span>`;
+                    }).join('');
+                } else {
+                    destinosDisplay.innerHTML = '<em>Nenhum destino encontrado</em>';
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                destinosDisplay.innerHTML = '<em class="text-danger">Erro ao carregar destinos</em>';
+            });
+    }
 
-            if (diarias > 0 && valorDiaria > 0) {
-                var total = diarias * valorDiaria;
-                valorTotalDisplay.value = total.toLocaleString('pt-BR', {
-                    style: 'currency',
-                    currency: 'BRL'
-                });
-            } else {
-                valorTotalDisplay.value = '';
-            }
+    function calculateTotal() {
+        var diariasInput = document.getElementById('Diarias');
+        var valorDiariaInput = document.getElementById('ValorDiaria');
+        var valorTotalDisplay = document.getElementById('valorTotalDisplay');
+
+        var diarias = parseFloat(diariasInput.value) || 0;
+        var valorDiaria = parseFloat(valorDiariaInput.value) || 0;
+
+        if (diarias > 0 && valorDiaria > 0) {
+            var total = diarias * valorDiaria;
+            valorTotalDisplay.value = total.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            });
+        } else {
+            valorTotalDisplay.value = '';
         }
+    }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            updateDestinos();
+    document.addEventListener('DOMContentLoaded', function() {
+        updateDestinos();
+        calculateTotal();
+
+        document.getElementById('ValorDiaria').addEventListener('input', function(e) {
+            // Permitir apenas números e ponto
+            this.value = this.value.replace(/[^0-9.]/g, '');
+            var parts = this.value.split('.');
+            if (parts.length > 2) {
+                this.value = parts[0] + '.' + parts.slice(1).join('');
+            }
             calculateTotal();
-
-            document.getElementById('reservaForm').addEventListener('submit', function(e) {
-                if (!validateForm()) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-
-            document.getElementById('ValorDiaria').addEventListener('input', function(e) {
-                this.value = this.value.replace(/[^0-9.]/g, '');
-                var parts = this.value.split('.');
-                if (parts.length > 2) {
-                    this.value = parts[0] + '.' + parts.slice(1).join('');
-                }
-                calculateTotal();
-            });
         });
 
-            function validateForm() {
-                var clienteId = document.getElementById('Reserva_ClienteId').value;
-                var pacoteId = document.getElementById('Reserva_PacoteTuristicoId').value;
-                var diarias = document.getElementById('Diarias').value;
-                var valorDiaria = document.getElementById('ValorDiaria').value;
-                var dataReserva = document.getElementById('Reserva_DataReserva').value;
-
-                if (!clienteId || clienteId === '') {
-                    alert('Por favor, selecione um cliente.');
-                    return false;
-                }
-
-                if (!pacoteId || pacoteId === '') {
-                    alert('Por favor, selecione um pacote turístico.');
-                    return false;
-                }
-
-                if (!diarias || diarias <= 0) {
-                    alert('Por favor, informe o número de diárias.');
-                    return false;
-                }
-
-                if (!valorDiaria || valorDiaria <= 0) {
-                    alert('Por favor, informe o valor da diária.');
-                    return false;
-                }
-
-                if (!dataReserva) {
-                    alert('Por favor, informe a data da reserva.');
-                    return false;
-                }
-
-                return true;
-        }
-    </script>
-}
+        // Auto-calcular quando diárias mudam
+        document.getElementById('Diarias').addEventListener('input', calculateTotal);
+    });
+</script>

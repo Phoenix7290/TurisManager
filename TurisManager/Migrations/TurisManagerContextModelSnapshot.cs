@@ -104,6 +104,9 @@ namespace TurisManager.Migrations
                     b.Property<DateTime>("DataInicio")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsConfirmada")
+                        .HasColumnType("bit");
+
                     b.Property<decimal>("Preco")
                         .HasColumnType("decimal(18,2)");
 
@@ -147,6 +150,9 @@ namespace TurisManager.Migrations
 
                     b.Property<DateTime>("DataReserva")
                         .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsConfirmada")
+                        .HasColumnType("bit");
 
                     b.Property<int>("PacoteTuristicoId")
                         .HasColumnType("int");

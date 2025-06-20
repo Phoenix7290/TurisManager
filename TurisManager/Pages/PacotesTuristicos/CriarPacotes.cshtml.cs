@@ -45,7 +45,6 @@ namespace TurisManager.Pages.PacotesTuristicos
 
         public async Task<IActionResult> OnPostAsync()
         {
-            // Validação customizada
             if (SelectedPaisDestinoId == 0)
             {
                 ModelState.AddModelError(nameof(SelectedPaisDestinoId), "Selecione um país");
@@ -63,7 +62,6 @@ namespace TurisManager.Pages.PacotesTuristicos
                 return Page();
             }
 
-            // Busca a cidade com Include para carregar a relação com PaisDestino
             var cidadeDestino = await _context.CidadesDestinos
                 .Include(c => c.PaisDestino)
                 .FirstOrDefaultAsync(c => c.Id == SelectedCidadeDestinoId);

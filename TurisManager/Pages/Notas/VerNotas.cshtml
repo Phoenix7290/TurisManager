@@ -26,3 +26,105 @@
     <h3>Conteúdo</h3>
     <p>@Model.FileContent</p>
 }
+
+<style>
+    form {
+        max-width: 600px;
+        margin: 40px auto;
+        padding: 32px 24px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+    }
+
+    h1, h2, h3 {
+        text-align: center;
+        font-weight: 600;
+        color: #222;
+        margin-top: 32px;
+        margin-bottom: 16px;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    label {
+        font-weight: 500;
+        color: #333;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        background: #f9fafb;
+        transition: border-color 0.2s;
+        font-size: 1rem;
+    }
+
+        .form-control:focus {
+            border-color: #2563eb;
+            outline: none;
+            background: #fff;
+        }
+
+    textarea.form-control {
+        height: 120px;
+        resize: vertical;
+    }
+
+    button.btn-primary {
+        width: 100%;
+        padding: 10px 0;
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        transition: background 0.2s;
+        margin-top: 8px;
+    }
+
+        button.btn-primary:hover {
+            background: #1d4ed8;
+            cursor: pointer;
+        }
+
+    ul.file-list {
+        list-style-type: none;
+        padding: 0;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+        ul.file-list li {
+            margin: 6px 0;
+        }
+
+        ul.file-list a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+            ul.file-list a:hover {
+                text-decoration: underline;
+            }
+
+    .note-content {
+        max-width: 600px;
+        margin: 12px auto;
+        padding: 16px;
+        background: #f9fafb;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        font-size: 1rem;
+        color: #333;
+        white-space: pre-line;
+    }
+</style>

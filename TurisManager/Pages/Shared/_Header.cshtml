@@ -1,0 +1,40 @@
+﻿<header class="site-header">
+    <nav class="navbar navbar-expand-sm">
+        <div class="container header-container">
+            <a class="navbar-brand" asp-area="" asp-page="/Index">TurisManager</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav nav-links">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Clientes/Index">Clientes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Clientes/CriarCliente">Criar Cliente</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/PacotesTuristicos/Index">Pacotes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/PacotesTuristicos/CriarPacotes">Novo Pacote</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Reservas/CriarReserva">Reservas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Notas/VerNotas">Notas</a>
+                    </li>
+                    <li class="nav-item logout-item">
+                        <form asp-page="/Auth/Logout" class="logout-form d-inline">
+                            <button type="submit" class="btn btn-outline-danger">Logout</button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

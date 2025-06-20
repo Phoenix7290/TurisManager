@@ -3,6 +3,89 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
 }
 
+.site-header {
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    padding: 0.5rem 0;
+}
+
+.site-header .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.site-header .navbar-brand {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: #2563eb;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.site-header .navbar-brand:hover {
+    color: #1d4ed8;
+}
+
+.site-header .nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.site-header .nav-links .nav-link {
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    transition: color 0.2s, background 0.2s;
+}
+
+.site-header .nav-links .nav-link:hover {
+    color: #2563eb;
+    background: rgba(37, 99, 235, 0.1);
+    border-radius: 4px;
+}
+
+.site-header .logout-item .btn-outline-danger {
+    border-radius: 0.5rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.site-header .logout-item .btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
+@media (max-width: 576px) {
+    .site-header .header-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .site-header .nav-links {
+        flex-direction: column;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+        .site-header .nav-links .nav-link,
+        .site-header .logout-item .btn-outline-danger {
+            width: 100%;
+            text-align: left;
+            padding-left: 0;
+        }
+}
+
 .form-group {
     margin-bottom: 1.5rem;
 }
@@ -31,13 +114,11 @@ body {
         transform: translateY(-1px);
     }
 
-/* Container styling to center content */
 .container {
-    max-width: 500px; /* Narrow container for auth pages */
+    max-width: 500px; 
     margin-top: 3rem;
 }
 
-/* Alert styling for error messages */
 .alert-danger {
     border-radius: 0.5rem;
     padding: 1rem;
@@ -46,7 +127,6 @@ body {
     color: #721c24;
 }
 
-/* Specific styling for Login page */
 h1 {
     font-size: 2rem;
     font-weight: 600;
@@ -55,13 +135,12 @@ h1 {
     margin-bottom: 2rem;
 }
 
-/* Logout page specific styling */
 .logout-form {
     text-align: center;
 }
 
     .logout-form .btn-primary {
-        background-color: #dc3545; /* Red for logout to differentiate */
+        background-color: #dc3545; 
         border-color: #dc3545;
     }
 
@@ -70,7 +149,6 @@ h1 {
             border-color: #c82333;
         }
 
-/* Responsive adjustments */
 @media (max-width: 576px) {
     .container {
         margin-top: 2rem;
@@ -84,5 +162,60 @@ h1 {
     .btn-primary {
         width: 100%;
         padding: 0.75rem;
+    }
+}
+
+.site-footer {
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    padding: 16px 0;
+    font-size: 0.9rem;
+    color: #555;
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+    .site-footer .footer-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 16px;
+    }
+
+    .site-footer .footer-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+        .site-footer .footer-links a {
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+            .site-footer .footer-links a:hover {
+                color: #1d4ed8;
+                text-decoration: underline;
+            }
+
+    .site-footer .footer-copy {
+        margin-top: 8px;
+        color: #777;
+    }
+
+@media (max-width: 576px) {
+    .site-footer .footer-container {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .site-footer .footer-links {
+        justify-content: center;
+        margin-bottom: 8px;
     }
 }

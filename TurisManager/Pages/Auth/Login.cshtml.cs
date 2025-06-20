@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -11,22 +10,17 @@ namespace TurisManager.Pages.Auth
     {
         [BindProperty]
         public string Username { get; set; }
+
         [BindProperty]
         public string Password { get; set; }
 
-        public string ErrorMessage { get; set; }
-
-        public IActionResult OnGet()
+        public void OnGet()
         {
-            return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+        public async Task<IActionResult> OnPostAsync()
         {
-            returnUrl ??= Url.Content("~/Index");
-
-            // Hardcoded credentials for simplicity
-            if (Username == "admin" && Password == "password123")
+            if (Username == "admin" && Password == "123456")
             {
                 var claims = new List<Claim>
                 {
@@ -35,16 +29,14 @@ namespace TurisManager.Pages.Auth
                 };
 
                 var claimsIdentity = new ClaimsIdentity(claims, "CookieAuth");
-                var authProperties = new AuthenticationProperties
-                {
-                    IsPersistent = true
-                };
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-                await HttpContext.SignInAsync("CookieAuth", new ClaimsPrincipal(claimsIdentity), authProperties);
-                return LocalRedirect(returnUrl);
+                await HttpContext.SignInAsync("CookieAuth", claimsPrincipal);
+
+                return RedirectToPage("/PacotesTuristicos/CriarPacotes");
             }
 
-            ErrorMessage = "Invalid username or password";
+            ModelState.AddModelError("", "Nome de usuário ou senha inválidos");
             return Page();
         }
     }

@@ -8,13 +8,10 @@ namespace TurisManager.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Cliente é obrigatório")]
-        [Range(1, int.MaxValue, ErrorMessage = "Selecione um cliente válido")]
+        // Remover validações Range problemáticas - validação será feita no PageModel
         public int ClienteId { get; set; }
         public Cliente Cliente { get; set; }
 
-        [Required(ErrorMessage = "Pacote Turístico é obrigatório")]
-        [Range(1, int.MaxValue, ErrorMessage = "Selecione um pacote turístico válido")]
         public int PacoteTuristicoId { get; set; }
         public PacoteTuristico PacoteTuristico { get; set; }
 
@@ -29,5 +26,6 @@ namespace TurisManager.Models
         {
             return diarias * valorDiaria;
         }
+        public bool IsConfirmada { get; set; }
     }
 }
