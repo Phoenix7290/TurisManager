@@ -1,0 +1,39 @@
+﻿@page
+@model TurisManager.Pages.PacotesTuristicos.CriarPacotesModel
+@{
+    ViewData["Title"] = "Criar Pacote Turístico";
+}
+
+<h1>Criar Pacote Turístico</h1>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="PacoteTuristico.Titulo">Título</label>
+        <input asp-for="PacoteTuristico.Titulo" class="form-control" />
+        <span asp-validation-for="PacoteTuristico.Titulo" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PacoteTuristico.DataInicio">Data de Início</label>
+        <input asp-for="PacoteTuristico.DataInicio" class="form-control" type="date" />
+        <span asp-validation-for="PacoteTuristico.DataInicio" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PacoteTuristico.CapacidadeMaxima">Capacidade Máxima</label>
+        <input asp-for="PacoteTuristico.CapacidadeMaxima" class="form-control" type="number" />
+        <span asp-validation-for="PacoteTuristico.CapacidadeMaxima" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="PacoteTuristico.Preco">Preço</label>
+        <input asp-for="PacoteTuristico.Preco" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="PacoteTuristico.Preco" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label>Destinos</label>
+        <select asp-for="PacoteTuristico.Destinos" asp-items="Model.CidadesDestinos" multiple class="form-control"></select>
+    </div>
+    <button type="submit" class="btn btn-primary">Criar</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
