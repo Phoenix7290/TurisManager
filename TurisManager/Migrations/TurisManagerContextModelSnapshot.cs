@@ -22,6 +22,21 @@ namespace TurisManager.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("CidadeDestinoPacoteTuristico", b =>
+                {
+                    b.Property<int>("DestinosId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PacotesTuristicosId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DestinosId", "PacotesTuristicosId");
+
+                    b.HasIndex("PacotesTuristicosId");
+
+                    b.ToTable("PacoteTuristicoDestinos", (string)null);
+                });
+
             modelBuilder.Entity("TurisManager.Models.CidadeDestino", b =>
                 {
                     b.Property<int>("Id")
@@ -32,21 +47,18 @@ namespace TurisManager.Migrations
 
                     b.Property<string>("Nome")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("PacoteTuristicoId")
-                        .HasColumnType("int");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Pais")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("PaisDestinoId")
+                    b.Property<int>("PaisDestinoId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PacoteTuristicoId");
 
                     b.HasIndex("PaisDestinoId");
 
@@ -97,7 +109,8 @@ namespace TurisManager.Migrations
 
                     b.Property<string>("Titulo")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
@@ -150,15 +163,30 @@ namespace TurisManager.Migrations
                     b.ToTable("Reservas");
                 });
 
+            modelBuilder.Entity("CidadeDestinoPacoteTuristico", b =>
+                {
+                    b.HasOne("TurisManager.Models.CidadeDestino", null)
+                        .WithMany()
+                        .HasForeignKey("DestinosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TurisManager.Models.PacoteTuristico", null)
+                        .WithMany()
+                        .HasForeignKey("PacotesTuristicosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("TurisManager.Models.CidadeDestino", b =>
                 {
-                    b.HasOne("TurisManager.Models.PacoteTuristico", null)
-                        .WithMany("Destinos")
-                        .HasForeignKey("PacoteTuristicoId");
-
-                    b.HasOne("TurisManager.Models.PaisDestino", null)
+                    b.HasOne("TurisManager.Models.PaisDestino", "PaisDestino")
                         .WithMany("Cidades")
-                        .HasForeignKey("PaisDestinoId");
+                        .HasForeignKey("PaisDestinoId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PaisDestino");
                 });
 
             modelBuilder.Entity("TurisManager.Models.Reserva", b =>
@@ -166,13 +194,13 @@ namespace TurisManager.Migrations
                     b.HasOne("TurisManager.Models.Cliente", "Cliente")
                         .WithMany("Reservas")
                         .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("TurisManager.Models.PacoteTuristico", "PacoteTuristico")
-                        .WithMany()
+                        .WithMany("Reservas")
                         .HasForeignKey("PacoteTuristicoId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Cliente");
@@ -187,7 +215,7 @@ namespace TurisManager.Migrations
 
             modelBuilder.Entity("TurisManager.Models.PacoteTuristico", b =>
                 {
-                    b.Navigation("Destinos");
+                    b.Navigation("Reservas");
                 });
 
             modelBuilder.Entity("TurisManager.Models.PaisDestino", b =>

@@ -6,52 +6,213 @@
 
 <h1>Criar Reserva</h1>
 
-<form method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form method="post" id="reservaForm">
+    <div asp-validation-summary="All" class="text-danger"></div>
+
     <div class="form-group">
         <label asp-for="Reserva.ClienteId">Cliente</label>
-        <select asp-for="Reserva.ClienteId" asp-items="Model.Clientes" class="form-control"></select>
+        <select asp-for="Reserva.ClienteId" asp-items="Model.Clientes" class="form-control">
+            <option value="">-- Selecione um Cliente --</option>
+        </select>
         <span asp-validation-for="Reserva.ClienteId" class="text-danger"></span>
     </div>
+
     <div class="form-group">
         <label asp-for="Reserva.PacoteTuristicoId">Pacote Turístico</label>
-        <select asp-for="Reserva.PacoteTuristicoId" asp-items="Model.Pacotes" class="form-control" onchange="updateDestinos()"></select>
+        <select asp-for="Reserva.PacoteTuristicoId" asp-items="Model.Pacotes" class="form-control" onchange="updateDestinos()">
+            <option value="">-- Selecione um Pacote --</option>
+        </select>
         <span asp-validation-for="Reserva.PacoteTuristicoId" class="text-danger"></span>
     </div>
+
     <div class="form-group">
         <label>Destinos do Pacote</label>
-        <div id="destinosDisplay"></div>
+        <div id="destinosDisplay" class="border p-2 bg-light">
+            <em>Selecione um pacote para ver os destinos</em>
+        </div>
     </div>
+
     <div class="form-group">
         <label asp-for="Diarias">Diárias</label>
-        <input asp-for="Diarias" type="number" class="form-control" min="1" />
+        <input asp-for="Diarias" type="number" class="form-control" min="1" oninput="calculateTotal()" required />
         <span asp-validation-for="Diarias" class="text-danger"></span>
     </div>
+
     <div class="form-group">
         <label asp-for="ValorDiaria">Valor por Diária</label>
-        <input asp-for="ValorDiaria" type="number" step="0.01" class="form-control" min="0.01" />
+        <input asp-for="ValorDiaria" type="number" step="0.01" class="form-control" min="0.01"
+               oninput="calculateTotal()" required
+               style="ime-mode: disabled;" />
         <span asp-validation-for="ValorDiaria" class="text-danger"></span>
+        <small class="form-text text-muted">Use ponto (.) para separar os centavos. Ex: 10.50</small>
     </div>
+
+    <div class="form-group">
+        <label>Valor Total (Calculado)</label>
+        <input type="text" id="valorTotalDisplay" class="form-control" readonly style="background-color: #f8f9fa;" />
+    </div>
+
     <div class="form-group">
         <label asp-for="Reserva.DataReserva">Data da Reserva</label>
-        <input asp-for="Reserva.DataReserva" type="date" class="form-control" />
+        <input asp-for="Reserva.DataReserva" type="date" class="form-control"
+               min="@DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")" required />
         <span asp-validation-for="Reserva.DataReserva" class="text-danger"></span>
     </div>
-    <button type="submit" class="btn btn-primary">Criar</button>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" id="submitBtn">Criar Reserva</button>
+        <a href="/Reservas" class="btn btn-secondary">Cancelar</a>
+    </div>
 </form>
+
+@if (Model.NovaReserva != null)
+{
+    <div class="mt-4">
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        <div class="card">
+            <div class="card-header">
+                <h3>Reserva Recém-Criada</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>ID:</strong> @Model.NovaReserva.Id</p>
+                <p><strong>Cliente:</strong> @Model.NovaReserva.Cliente?.Nome</p>
+                <p><strong>Pacote Turístico:</strong> @Model.NovaReserva.PacoteTuristico?.Titulo</p>
+                <p><strong>Data da Reserva:</strong> @Model.NovaReserva.DataReserva.ToString("dd/MM/yyyy")</p>
+                <p><strong>Diárias:</strong> @Model.Diarias</p>
+                <p><strong>Valor por Diária:</strong> @Model.ValorDiaria.ToString("C")</p>
+                <p><strong>Valor Total:</strong> @Model.NovaReserva.ValorTotal.ToString("C")</p>
+                <p>
+                    <strong>Destinos:</strong>
+                    @if (Model.NovaReserva.PacoteTuristico?.Destinos != null && Model.NovaReserva.PacoteTuristico.Destinos.Any())
+                    {
+                        @foreach (var destino in Model.NovaReserva.PacoteTuristico.Destinos)
+                        {
+                            <span class="badge badge-info mr-1">@destino.Nome, @destino.Pais</span>
+                        }
+                    }
+                    else
+                    {
+                        <span class="text-muted">Nenhum destino encontrado</span>
+                    }
+                </p>
+            </div>
+        </div>
+    </div>
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         function updateDestinos() {
-            var pacoteId = document.getElementById('Reserva_PacoteTuristicoId').value;
-            fetch(`/PacotesTuristicos/GetDestinos?pacoteId=${pacoteId}`)
-                .then(response => response.json())
+            var pacoteSelect = document.getElementById('Reserva_PacoteTuristicoId');
+            var pacoteId = pacoteSelect.value;
+            var destinosDisplay = document.getElementById('destinosDisplay');
+
+            if (!pacoteId || pacoteId === '') {
+                destinosDisplay.innerHTML = '<em>Selecione um pacote para ver os destinos</em>';
+                return;
+            }
+
+            destinosDisplay.innerHTML = '<em>Carregando destinos...</em>';
+
+            fetch(`/Reservas/CriarReserva?handler=Destinos&pacoteId=${pacoteId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro ao carregar destinos');
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    var destinosDisplay = document.getElementById('destinosDisplay');
-                    destinosDisplay.innerHTML = data.map(d => `<p>${d.Nome}, ${d.Pais}</p>`).join('');
+                    console.log('Destinos recebidos:', data);
+                    if (data && data.length > 0) {
+                        destinosDisplay.innerHTML = data.map(d => {
+                            var pais = d.pais || 'País não informado';
+                            var nome = d.nome || 'Nome não informado';
+                            return `<span class="badge badge-info mr-1">${nome}, ${pais}</span>`;
+                        }).join('');
+                    } else {
+                        destinosDisplay.innerHTML = '<em>Nenhum destino encontrado</em>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                    destinosDisplay.innerHTML = '<em class="text-danger">Erro ao carregar destinos</em>';
                 });
         }
-        window.onload = updateDestinos;
+
+        function calculateTotal() {
+            var diariasInput = document.getElementById('Diarias');
+            var valorDiariaInput = document.getElementById('ValorDiaria');
+            var valorTotalDisplay = document.getElementById('valorTotalDisplay');
+
+            var diarias = parseFloat(diariasInput.value) || 0;
+            var valorDiaria = parseFloat(valorDiariaInput.value) || 0;
+
+            if (diarias > 0 && valorDiaria > 0) {
+                var total = diarias * valorDiaria;
+                valorTotalDisplay.value = total.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL'
+                });
+            } else {
+                valorTotalDisplay.value = '';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDestinos();
+            calculateTotal();
+
+            document.getElementById('reservaForm').addEventListener('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+
+            document.getElementById('ValorDiaria').addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9.]/g, '');
+                var parts = this.value.split('.');
+                if (parts.length > 2) {
+                    this.value = parts[0] + '.' + parts.slice(1).join('');
+                }
+                calculateTotal();
+            });
+        });
+
+            function validateForm() {
+                var clienteId = document.getElementById('Reserva_ClienteId').value;
+                var pacoteId = document.getElementById('Reserva_PacoteTuristicoId').value;
+                var diarias = document.getElementById('Diarias').value;
+                var valorDiaria = document.getElementById('ValorDiaria').value;
+                var dataReserva = document.getElementById('Reserva_DataReserva').value;
+
+                if (!clienteId || clienteId === '') {
+                    alert('Por favor, selecione um cliente.');
+                    return false;
+                }
+
+                if (!pacoteId || pacoteId === '') {
+                    alert('Por favor, selecione um pacote turístico.');
+                    return false;
+                }
+
+                if (!diarias || diarias <= 0) {
+                    alert('Por favor, informe o número de diárias.');
+                    return false;
+                }
+
+                if (!valorDiaria || valorDiaria <= 0) {
+                    alert('Por favor, informe o valor da diária.');
+                    return false;
+                }
+
+                if (!dataReserva) {
+                    alert('Por favor, informe a data da reserva.');
+                    return false;
+                }
+
+                return true;
+        }
     </script>
 }

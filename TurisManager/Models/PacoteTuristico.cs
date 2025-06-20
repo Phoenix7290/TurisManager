@@ -1,7 +1,7 @@
-﻿// TurisManager/Models/PacoteTuristico.cs
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TurisManager.Models
 {
@@ -9,27 +9,28 @@ namespace TurisManager.Models
     {
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "O título é obrigatório")]
+        [Required(ErrorMessage = "Título é obrigatório")]
+        [StringLength(200, ErrorMessage = "Título deve ter no máximo 200 caracteres")]
         public string Titulo { get; set; }
 
-        [Required(ErrorMessage = "A data de início é obrigatória")]
+        [Required(ErrorMessage = "Data de início é obrigatória")]
         [DataType(DataType.Date)]
-        [Display(Name = "Data de Início")]
         public DateTime DataInicio { get; set; }
 
-        [Required(ErrorMessage = "A capacidade máxima é obrigatória")]
-        [Range(1, int.MaxValue, ErrorMessage = "A capacidade deve ser maior que 0")]
+        [Required(ErrorMessage = "Capacidade máxima é obrigatória")]
+        [Range(1, int.MaxValue, ErrorMessage = "Capacidade máxima deve ser maior que zero")]
         public int CapacidadeMaxima { get; set; }
 
-        [Required(ErrorMessage = "O preço é obrigatório")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "O preço deve ser maior que 0")]
+        [Required(ErrorMessage = "Preço é obrigatório")]
+        [Column(TypeName = "decimal(18,2)")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Preço deve ser maior que zero")]
         public decimal Preco { get; set; }
 
-        public List<CidadeDestino> Destinos { get; set; } = new List<CidadeDestino>();
-        public List<Reserva> Reservas { get; set; } = new List<Reserva>();
+        public virtual ICollection<CidadeDestino> Destinos { get; set; } = new List<CidadeDestino>();
 
-        public delegate void CapacityReachedHandler(object sender, EventArgs e);
-        public event CapacityReachedHandler CapacityReached;
+        public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
+
+        public event EventHandler CapacityReached;
 
         public void CheckCapacity(int currentReservations)
         {

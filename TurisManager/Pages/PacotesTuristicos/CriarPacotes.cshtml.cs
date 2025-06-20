@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace TurisManager.Pages.PacotesTuristicos
 {
@@ -25,9 +26,11 @@ namespace TurisManager.Pages.PacotesTuristicos
         public PacoteTuristico Pacote { get; set; } = new PacoteTuristico();
 
         [BindProperty]
+        [Required(ErrorMessage = "Selecione um país")]
         public int SelectedPaisDestinoId { get; set; }
 
         [BindProperty]
+        [Required(ErrorMessage = "Selecione uma cidade")]
         public int SelectedCidadeDestinoId { get; set; }
 
         public SelectList Paises { get; set; }
@@ -42,6 +45,17 @@ namespace TurisManager.Pages.PacotesTuristicos
 
         public async Task<IActionResult> OnPostAsync()
         {
+            // Validação customizada
+            if (SelectedPaisDestinoId == 0)
+            {
+                ModelState.AddModelError(nameof(SelectedPaisDestinoId), "Selecione um país");
+            }
+
+            if (SelectedCidadeDestinoId == 0)
+            {
+                ModelState.AddModelError(nameof(SelectedCidadeDestinoId), "Selecione uma cidade");
+            }
+
             if (!ModelState.IsValid)
             {
                 Paises = new SelectList(await _context.PaisesDestinos.ToListAsync(), "Id", "Nome");
@@ -49,21 +63,23 @@ namespace TurisManager.Pages.PacotesTuristicos
                 return Page();
             }
 
+            // Busca a cidade com Include para carregar a relação com PaisDestino
             var cidadeDestino = await _context.CidadesDestinos
+                .Include(c => c.PaisDestino)
                 .FirstOrDefaultAsync(c => c.Id == SelectedCidadeDestinoId);
-
-            PaisDestino? paisDestino = null;
-            if (cidadeDestino != null)
-            {
-                paisDestino = await _context.PaisesDestinos
-                    .FirstOrDefaultAsync(p => p.Cidades.Any(c => c.Id == cidadeDestino.Id));
-            }
 
             if (cidadeDestino != null)
             {
                 Pacote.Destinos = new List<CidadeDestino> { cidadeDestino };
                 _context.PacotesTuristicos.Add(Pacote);
                 await _context.SaveChangesAsync();
+            }
+            else
+            {
+                ModelState.AddModelError("", "Cidade destino não encontrada");
+                Paises = new SelectList(await _context.PaisesDestinos.ToListAsync(), "Id", "Nome");
+                Cidades = new SelectList(await _context.CidadesDestinos.ToListAsync(), "Id", "Nome");
+                return Page();
             }
 
             return RedirectToPage("./Index");

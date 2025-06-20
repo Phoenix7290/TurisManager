@@ -1,20 +1,23 @@
-﻿@page
-@model TurisManager.Models.PacoteTuristico
+﻿@model TurisManager.Models.PacoteTuristico
 
 <div class="card mb-3">
     <div class="card-header">
         <h5>@Model.Titulo</h5>
+        \(\)
     </div>
     <div class="card-body">
         <p><strong>Data de Início:</strong> @Model.DataInicio.ToString("dd/MM/yyyy")</p>
         <p><strong>Capacidade Máxima:</strong> @Model.CapacidadeMaxima</p>
         <p><strong>Preço:</strong> @Model.Preco.ToString("C")</p>
-        <p><strong>Destinos:</strong>
+        <p>
+            <strong>Destinos:</strong>
             @if (Model.Destinos != null && Model.Destinos.Any())
             {
                 @foreach (var destino in Model.Destinos)
                 {
-                    <span>@destino.Nome, @destino.Pais</span><br />
+                    <span>@destino.Nome, @destino.Pais</span>
+
+                    <br />
                 }
             }
             else

@@ -4,13 +4,16 @@
     ViewData["Title"] = "Pacotes Turísticos";
 }
 
-<h1>Pacotes Turísticos</h1>
+<h1>Lista de Pacotes Turísticos</h1>
 
-<div class="row">
-    @foreach (var pacote in Model.PacotesTuristicos)
+@if (Model.PacotesTuristicos != null && Model.PacotesTuristicos.Any())
+{
+    foreach (var pacote in Model.PacotesTuristicos)
     {
-        <div class="col-md-4">
-            <partial name="_PacoteCard" model="pacote" />
-        </div>
+        <partial name="_PacotesPartial" model="pacote" />
     }
-</div>
+}
+else
+{
+    <p>Nenhum pacote turístico encontrado.</p>
+}

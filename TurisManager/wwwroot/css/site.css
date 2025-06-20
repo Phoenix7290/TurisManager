@@ -1,22 +1,88 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    background-color: #f4f6f9;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-control {
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+    padding: 0.75rem;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+.btn-primary {
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+        transform: translateY(-1px);
+    }
+
+/* Container styling to center content */
+.container {
+    max-width: 500px; /* Narrow container for auth pages */
+    margin-top: 3rem;
+}
+
+/* Alert styling for error messages */
+.alert-danger {
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Specific styling for Login page */
+h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Logout page specific styling */
+.logout-form {
+    text-align: center;
+}
+
+    .logout-form .btn-primary {
+        background-color: #dc3545; /* Red for logout to differentiate */
+        border-color: #dc3545;
+    }
+
+        .logout-form .btn-primary:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .container {
+        margin-top: 2rem;
+        padding: 0 1rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 0.75rem;
+    }
 }

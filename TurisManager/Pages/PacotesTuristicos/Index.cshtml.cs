@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using TurisManager.Data;
 using TurisManager.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 
 namespace TurisManager.Pages.PacotesTuristicos
 {
@@ -27,6 +27,7 @@ namespace TurisManager.Pages.PacotesTuristicos
                 .Include(p => p.Destinos)
                 .ToListAsync();
         }
+
         public JsonResult OnGetDestinos(int pacoteId)
         {
             var destinos = _context.PacotesTuristicos
