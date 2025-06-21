@@ -8,7 +8,6 @@ namespace TurisManager.Models
     {
         public int Id { get; set; }
 
-        // Remover validações Range problemáticas - validação será feita no PageModel
         public int ClienteId { get; set; }
         public Cliente Cliente { get; set; }
 

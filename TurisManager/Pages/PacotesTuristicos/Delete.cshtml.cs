@@ -61,12 +61,10 @@ namespace TurisManager.Pages.PacotesTuristicos
                 return NotFound();
             }
 
-            // Verificar se existem reservas associadas
             if (Pacote.Reservas != null && Pacote.Reservas.Any())
             {
                 ErrorMessage = "Não é possível excluir este pacote pois existem reservas associadas a ele.";
 
-                // Recarregar os dados para exibir novamente
                 Pacote = await _context.PacotesTuristicos
                     .Include(p => p.Destinos)
                         .ThenInclude(d => d.PaisDestino)
@@ -89,7 +87,6 @@ namespace TurisManager.Pages.PacotesTuristicos
             {
                 ErrorMessage = "Ocorreu um erro ao tentar excluir o pacote. Tente novamente.";
 
-                // Recarregar os dados para exibir novamente
                 Pacote = await _context.PacotesTuristicos
                     .Include(p => p.Destinos)
                         .ThenInclude(d => d.PaisDestino)

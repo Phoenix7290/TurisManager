@@ -162,7 +162,6 @@
         calculateTotal();
 
         document.getElementById('ValorDiaria').addEventListener('input', function(e) {
-            // Permitir apenas números e ponto
             this.value = this.value.replace(/[^0-9.]/g, '');
             var parts = this.value.split('.');
             if (parts.length > 2) {
@@ -171,7 +170,6 @@
             calculateTotal();
         });
 
-        // Auto-calcular quando diárias mudam
         document.getElementById('Diarias').addEventListener('input', calculateTotal);
     });
 </script>

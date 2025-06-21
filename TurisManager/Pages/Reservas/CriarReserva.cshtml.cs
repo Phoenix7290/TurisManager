@@ -102,8 +102,8 @@ namespace TurisManager.Pages.Reservas
 
             try
             {
-                // Calcular valor total
-                Reserva.ValorTotal = Diarias * ValorDiaria;
+                Func<int, decimal, decimal> calcularTotal = (diarias, valorDiaria) => diarias * valorDiaria;
+                Reserva.ValorTotal = calcularTotal(Diarias, ValorDiaria);
 
                 // Adicionar ao contexto
                 _context.Reservas.Add(Reserva);

@@ -21,7 +21,12 @@ namespace TurisManager.Pages.Clientes
 
         public async Task<IActionResult> OnGetAsync()
         {
-            Clientes = await _context.Clientes.Where(c => !c.IsDeleted).ToListAsync();
+            Clientes = await _context.Clientes
+                .Include(c => c.Reservas)
+                .Where(c => !c.IsDeleted)
+                .OrderBy(c => c.Nome)
+                .ToListAsync();
+
             return Page();
         }
     }

@@ -34,7 +34,6 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// MIDDLEWARE MOVIDO PARA ANTES DO MapRazorPages()
 app.Use(async (context, next) =>
 {
     if (context.Request.Path == "/" && !context.User.Identity.IsAuthenticated)
@@ -53,7 +52,6 @@ app.MapGet("/", context =>
     return Task.CompletedTask;
 });
 
-// Seed data
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<TurisManagerContext>();

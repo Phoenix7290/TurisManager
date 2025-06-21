@@ -31,13 +31,9 @@ namespace TurisManager.Models
         public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 
         public event EventHandler CapacityReached;
-
-        public void CheckCapacity(int currentReservations)
+        protected virtual void OnCapacityReached()
         {
-            if (currentReservations >= CapacidadeMaxima)
-            {
-                CapacityReached?.Invoke(this, EventArgs.Empty);
-            }
+            CapacityReached?.Invoke(this, EventArgs.Empty);
         }
         public bool IsConfirmada { get; set; }
     }
