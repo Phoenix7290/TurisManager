@@ -2,6 +2,12 @@
 
 TurisManager é uma aplicação web desenvolvida em ASP.NET Core Razor Pages para gerenciamento de pacotes turísticos, clientes, reservas e destinos. A aplicação permite criar, editar, visualizar e excluir registros de clientes, pacotes turísticos e reservas, além de gerenciar destinos associados a pacotes.
 
+## Login
+
+Login: admin
+Password: 123456
+Code Behind em Login.cshtml.cs
+
 ## Funcionalidades
 
 - **Gerenciamento de Clientes**:
